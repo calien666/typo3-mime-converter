@@ -1,0 +1,20 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+  _instanceof:
+    WebVision\MimeConverter\Converter\AbstractFileConverter:
+      tags: ['mime.converter']
+
+  WebVision\MimeConverter\:
+    resource: '../Classes/*'
+
+  WebVision\MimeConverter\Event\ConvertFileToCorrectMimeType:
+    tags:
+      - name: event.listener
+        identifier: 'web-vision/file-fixer'
+        event: TYPO3\CMS\Core\Resource\Event\BeforeFileAddedEvent
+
+  WebVision\MimeConverter\Converter\FileConverterRegistry:
+    arguments: [ !tagged_locator { tag: 'mime.converter', index_by: 'identifier' } ]
