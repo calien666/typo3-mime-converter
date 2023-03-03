@@ -6,12 +6,17 @@ namespace WebVision\MimeConverter\Converter\Provider;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WebVision\MimeConverter\Converter\AbstractFileConverter;
-use WebVision\MimeConverter\Utility\MimeTypeUtility;
+use WebVision\MimeConverter\Exception\MimeTypeNotRegisteredException;
 
-class ImageConverterProvider extends AbstractFileConverter
+/**
+ * @internal
+ * This class is internal use for mime_converter and no public API
+ *
+ * Handles the image conversion for wrong suffixed images
+ * @example for other mime converters
+ */
+final class ImageConverterProvider extends AbstractFileConverter
 {
-    private string $sourceTemp;
-
     /**
      * @var array<string, string>
      */
@@ -45,6 +50,7 @@ class ImageConverterProvider extends AbstractFileConverter
         'image/svg+xml' => 'svg',
         'image/tiff' => 'tiff',
     ];
+    private ?string $sourceTemp = null;
 
     public static function canConvert(string $mimeType, string $expectedMimeType): bool
     {
@@ -53,6 +59,9 @@ class ImageConverterProvider extends AbstractFileConverter
             && array_key_exists($expectedMimeType, self::$forceConvertTypes);
     }
 
+    /**
+     * @throws MimeTypeNotRegisteredException
+     */
     public function convert(
         string $originalFile,
         string $setMimeType,
@@ -62,7 +71,7 @@ class ImageConverterProvider extends AbstractFileConverter
             'converter',
             sprintf(
                 '.%s',
-                MimeTypeUtility::detectFileExtensionFromMimeType($setMimeType)[0] ?? ''
+                $this->mimeTypeDetectorService->getFileExtensionsForMimeType($setMimeType)[0] ?? ''
             )
         );
 
@@ -83,6 +92,8 @@ class ImageConverterProvider extends AbstractFileConverter
 
     public function __destruct()
     {
-        GeneralUtility::unlink_tempfile($this->sourceTemp);
+        if ($this->sourceTemp !== null) {
+            GeneralUtility::unlink_tempfile($this->sourceTemp);
+        }
     }
 }
