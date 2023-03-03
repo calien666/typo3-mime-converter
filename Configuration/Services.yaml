@@ -3,12 +3,17 @@ services:
     autowire: true
     autoconfigure: true
     public: false
-  _instanceof:
-    WebVision\MimeConverter\Converter\AbstractFileConverter:
-      tags: ['mime.converter']
 
   WebVision\MimeConverter\:
     resource: '../Classes/*'
+    exclude:
+      - '../Classes/Converter/FileConverterRegistry.php'
+      - '../Classes/Event/*'
+
+  WebVision\MimeConverter\Converter\Provider\ImageConverterProvider:
+    tags:
+      - name: mime.converter
+        identifier: image
 
   WebVision\MimeConverter\Event\ConvertFileToCorrectMimeType:
     tags:
@@ -17,4 +22,8 @@ services:
         event: TYPO3\CMS\Core\Resource\Event\BeforeFileAddedEvent
 
   WebVision\MimeConverter\Converter\FileConverterRegistry:
-    arguments: [ !tagged_locator { tag: 'mime.converter', index_by: 'identifier' } ]
+    arguments:
+      $mimeConverterLocator: !tagged_locator { tag: 'mime.converter', index_by: 'identifier' }
+
+  WebVision\MimeConverter\Service\MimeTypeDetectorService:
+    public: true
