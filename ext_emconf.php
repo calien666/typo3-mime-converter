@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 $EM_CONF[$_EXTKEY] = [
     'title' => '(web-vision) Mime Converter',
     'description' => 'File converter based on mime-type to file extension comparison. Serves image converter by default and registry for self written converter providers.',
