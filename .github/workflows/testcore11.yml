@@ -58,7 +58,6 @@ jobs:
 
       - name: "Functional SQLite"
         run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s functional -d sqlite"
-        if: contains(fromJSON('[ "8.1", "8.2" ]'), ${{ matrix.php-version }} )
 
       - name: "Functional MariaDB 10.5 mysqli"
         run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s functional -d mariadb -a mysqli"

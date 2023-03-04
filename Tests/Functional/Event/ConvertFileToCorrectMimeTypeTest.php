@@ -33,7 +33,7 @@ class ConvertFileToCorrectMimeTypeTest extends FunctionalTestCase
     {
         $sourceFile = Environment::getPublicPath() . '/fixture/sample1.jpg';
 
-        static::assertSame('image/heic', mime_content_type($sourceFile));
+        self::assertSame('image/heic', mime_content_type($sourceFile));
 
         /** @var ResourceStorage $resourceStorage */
         $resourceStorage = GeneralUtility::makeInstance(
@@ -49,6 +49,6 @@ class ConvertFileToCorrectMimeTypeTest extends FunctionalTestCase
             DuplicationBehavior::REPLACE
         );
 
-        static::assertSame('image/jpeg', mime_content_type($file->getPublicUrl()));
+        self::assertSame('image/jpeg', mime_content_type($file->getPublicUrl()));
     }
 }

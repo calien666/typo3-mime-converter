@@ -326,10 +326,10 @@ unit)
     docker-compose down
     ;;
 update)
-    # pull typo3/core-testing-*:latest versions of those ones that exist locally
-    docker images typo3/core-testing-*:latest --format "{{.Repository}}:latest" | xargs -I {} docker pull {}
-    # remove "dangling" typo3/core-testing-* images (those tagged as <none>)
-    docker images typo3/core-testing-* --filter "dangling=true" --format "{{.ID}}" | xargs -I {} docker rmi {}
+    # pull sbuerk/webvision-testing-*:latest versions of those ones that exist locally
+    docker images sbuerk/webvision-testing-*:latest --format "{{.Repository}}:latest" | xargs -I {} docker pull {}
+    # remove "dangling" sbuerk/webvision-testing--* images (those tagged as <none>)
+    docker images sbuerk/webvision-testing-* --filter "dangling=true" --format "{{.ID}}" | xargs -I {} docker rmi {}
     ;;
 phpstan)
     setUpDockerComposeDotEnv

@@ -30,6 +30,6 @@ class FileConverterRegistryTest extends FunctionalTestCase
             'image/jpeg'
         );
 
-        static::assertInstanceOf(ImageConverterProvider::class, $converter);
+        self::assertInstanceOf(ImageConverterProvider::class, $converter);
     }
 }
