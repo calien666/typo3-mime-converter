@@ -13,9 +13,12 @@ use WebVision\MimeConverter\Service\MimeTypeDetectorService;
  */
 abstract class AbstractFileConverter implements FileConverterInterface
 {
+    protected MimeTypeDetectorService $mimeTypeDetectorService;
+
     public function __construct(
-        protected readonly MimeTypeDetectorService $mimeTypeDetectorService
+        MimeTypeDetectorService $mimeTypeDetectorService
     ) {
+        $this->mimeTypeDetectorService = $mimeTypeDetectorService;
     }
 
     public function copyFile(string $originalFile, string $fileSuffix): ?string
