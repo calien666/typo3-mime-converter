@@ -1,11 +1,11 @@
-[![Latest Stable Version](https://poser.pugx.org/web-vision/mime-converter/v/stable.svg)](https://packagist.org/packages/web-vision/mime-converter)
-[![PHP Version Require](http://poser.pugx.org/web-vision/mime-converter/require/php)](https://packagist.org/packages/web-vision/mime-converter)
+[![Latest Stable Version](https://poser.pugx.org/calien/mime-converter/v/stable.svg)](https://packagist.org/packages/calien/mime-converter)
+[![PHP Version Require](http://poser.pugx.org/calien/mime-converter/require/php)](https://packagist.org/packages/calien/mime-converter)
 [![TYPO3 12.2](https://img.shields.io/badge/TYPO3-12.2-green.svg?style=flat-square)](https://get.typo3.org/version/12)
 [![TYPO3 11.5](https://img.shields.io/badge/TYPO3-11.5-green.svg?style=flat-square)](https://get.typo3.org/version/11)
 
-[![License](http://poser.pugx.org/web-vision/mime-converter/license)](https://packagist.org/packages/web-vision/mime-converter)
-[![Total Downloads](https://poser.pugx.org/web-vision/mime-converter/downloads.svg)](https://packagist.org/packages/web-vision/mime-converter)
-[![Monthly Downloads](https://poser.pugx.org/web-vision/mime-converter/d/monthly)](https://packagist.org/packages/web-vision/mime-converter)
+[![License](http://poser.pugx.org/calien/mime-converter/license)](https://packagist.org/packages/calien/mime-converter)
+[![Total Downloads](https://poser.pugx.org/calien/mime-converter/downloads.svg)](https://packagist.org/packages/calien/mime-converter)
+[![Monthly Downloads](https://poser.pugx.org/calien/mime-converter/d/monthly)](https://packagist.org/packages/calien/mime-converter)
 
 # TYPO3 extension `mime_converter`
 
@@ -35,11 +35,11 @@ Install with your favour:
 We prefer composer installation:
 
 ```bash
-composer req web-vision/mime-converter
+composer req calien/mime-converter
 ```
 
-|                  | URL                                                            |
-|------------------|----------------------------------------------------------------|
-| **Repository:**  | https://github.com/calien666/mime-converter                    |
-| **Read online:** | https://docs.typo3.org/p/web-vision/mime-converter/main/en-us/ |
-| **TER:**         | https://extensions.typo3.org/extension/mime_converter/         |
+|                  | URL                                                        |
+|------------------|------------------------------------------------------------|
+| **Repository:**  | https://github.com/calien666/mime-converter                |
+| **Read online:** | https://docs.typo3.org/p/calien/mime-converter/main/en-us/ |
+| **TER:**         | https://extensions.typo3.org/extension/mime_converter/     |
