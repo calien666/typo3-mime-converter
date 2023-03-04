@@ -169,20 +169,6 @@ services:
         fi
       "
 
-  cgl_all:
-    image: sbuerk/webvision-testing-${DOCKER_PHP_IMAGE}:latest
-    user: "${HOST_UID}"
-    volumes:
-      - ${ROOT_DIR}:${ROOT_DIR}
-    working_dir: ${ROOT_DIR}/
-    command: >
-      /bin/sh -c "
-        if [ ${SCRIPT_VERBOSE} -eq 1 ]; then
-          set -x
-        fi
-        php -dxdebug.mode=off .Build/bin/php-cs-fixer fix -v ${CGLCHECK_DRY_RUN} --config=Build/php-cs-fixer/php-cs-rules.php
-      "
-
   functional_sqlite:
     image: sbuerk/webvision-testing-${DOCKER_PHP_IMAGE}:latest
     user: ${HOST_UID}
@@ -332,4 +318,17 @@ services:
           set -x
         fi
         php -dxdebug.mode=off Build/Scripts/validateRstFiles.php;
+      "
+  cgl_all:
+    image: sbuerk/webvision-testing-${DOCKER_PHP_IMAGE}:latest
+    user: "${HOST_UID}"
+    volumes:
+      - ${ROOT_DIR}:${ROOT_DIR}
+    working_dir: ${ROOT_DIR}/
+    command: >
+      /bin/sh -c "
+        if [ ${SCRIPT_VERBOSE} -eq 1 ]; then
+          set -x
+        fi
+        php -dxdebug.mode=off .Build/bin/php-cs-fixer fix -v ${CGLCHECK_DRY_RUN} --config=Build/php-cs-fixer/php-cs-rules.php
       "

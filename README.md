@@ -33,6 +33,7 @@ Install with your favour:
 * composer
 
 We prefer composer installation:
+
 ```bash
 composer req web-vision/mime-converter
 ```
