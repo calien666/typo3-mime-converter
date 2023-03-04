@@ -9,3 +9,4 @@ composer.lock
 public
 /composer.json.testing
 /.php-cs-fixer.cache
+/Documentation-GENERATED-temp/
