@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 $EM_CONF[$_EXTKEY] = [
     'title' => '(web-vision) Mime Converter',
-    'description' => 'File converter based on mime-type to file extension comparison. Serves image converter by default and automatic tagging for self written converter providers.',
+    'description' => 'File converter based on mime-type to file extension comparison. Serves image converter by default and registry for self written converter providers.',
     'category' => 'services',
     'author' => 'web-vision',
     'author_email' => 'hello@web-vision.de',
@@ -22,12 +22,12 @@ $EM_CONF[$_EXTKEY] = [
     ],
     'autoload' => [
         'psr-4' => [
-            'WebVision\\MimeConverter\\' => 'Classes'
-        ]
+            'WebVision\\MimeConverter\\' => 'Classes',
+        ],
     ],
     'autoload-dev' => [
         'psr-4' => [
-            'WebVision\\MimeConverter\\Tests\\' => 'Tests'
-        ]
+            'WebVision\\MimeConverter\\Tests\\' => 'Tests',
+        ],
     ],
 ];
