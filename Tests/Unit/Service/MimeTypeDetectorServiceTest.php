@@ -26,7 +26,7 @@ class MimeTypeDetectorServiceTest extends UnitTestCase
         string $fileSuffix,
         string $expectedResult
     ): void {
-        static::assertTrue(
+        self::assertTrue(
             in_array(
                 $expectedResult,
                 $this->mimeTypeDetectorService->getExpectedMimeTypeFromFileSuffix($fileSuffix)
@@ -88,7 +88,7 @@ class MimeTypeDetectorServiceTest extends UnitTestCase
         string $fileName,
         string $expectedResult
     ): void {
-        static::assertSame(
+        self::assertSame(
             $expectedResult,
             $this->mimeTypeDetectorService->getExtensionFromFile($fileName)
         );
