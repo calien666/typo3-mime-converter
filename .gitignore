@@ -1,0 +1,11 @@
+.idea
+.Build
+vendor
+var
+.vscode
+Build/testing-docker/.env
+/.cache/
+composer.lock
+public
+/composer.json.testing
+/.php-cs-fixer.cache
