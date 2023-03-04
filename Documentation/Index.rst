@@ -8,7 +8,7 @@ MiMe Converter
     mime_converter
 
 :Package name:
-    web-vision/mime-converter
+    calien/mime-converter
 
 :Version:
     |release|
@@ -20,7 +20,7 @@ MiMe Converter
     2023
 
 :Author:
-    web-vision GmbH
+    Markus Hofmann
 
 :Rendered:
     |today|

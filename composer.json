@@ -1,8 +1,15 @@
 {
-	"name": "web-vision/mime-converter",
+	"name": "calien/mime-converter",
 	"description": "File converter based on mime-type to file extension comparison. Serves image converter by default and automatic tagging for self written converter providers.",
 	"type": "typo3-cms-extension",
 	"license": "GPL-2.0-or-later",
+	"authors": [
+		{
+			"name": "Markus Hofmann",
+			"email": "typo3@calien.de",
+			"role": "Developer"
+		}
+	],
 	"require": {
 		"typo3/cms-core": "^11.5 || ^12.2",
 		"ext-imagick": "*",
