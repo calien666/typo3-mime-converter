@@ -39,6 +39,30 @@ setUpDockerComposeDotEnv() {
     } >.env
 }
 
+# Options -a and -d depend on each other. The function
+# validates input combinations and sets defaults.
+handleDbmsAndDriverOptions() {
+    case ${DBMS} in
+        mysql|mariadb)
+            [ -z "${DATABASE_DRIVER}" ] && DATABASE_DRIVER="mysqli"
+            if [ "${DATABASE_DRIVER}" != "mysqli" ] && [ "${DATABASE_DRIVER}" != "pdo_mysql" ]; then
+                echo "Invalid option -a ${DATABASE_DRIVER} with -d ${DBMS}" >&2
+                echo >&2
+                echo "call \"./Build/Scripts/runTests.sh -h\" to display help and valid options" >&2
+                exit 1
+            fi
+            ;;
+        postgres|sqlite)
+            if [ -n "${DATABASE_DRIVER}" ]; then
+                echo "Invalid option -a ${DATABASE_DRIVER} with -d ${DBMS}" >&2
+                echo >&2
+                echo "call \"./Build/Scripts/runTests.sh -h\" to display help and valid options" >&2
+                exit 1
+            fi
+            ;;
+    esac
+}
+
 # Load help text into $HELP
 read -r -d '' HELP <<EOF
 mime_converter test runner. Execute unit test suite and some other details.
@@ -51,18 +75,35 @@ No arguments: Run all unit tests with PHP 7.4
 Options:
     -s <...>
         Specifies which test suite to run
-            - composerUpdate: "composer update"
+            - cgl: cgl test and fix all php files
+            - checkBom: check UTF-8 files do not contain BOM
+            - checkRst: test .rst files for integrity
+            - checkTestMethodsPrefix: check tests methods do not start with "test"
             - clean: clean up build and testing related files
-            - lint: PHP linting
-            - unit (default): PHP unit tests
+            - composerUpdate: "composer update", handy if host has no PHP
             - functional: functional tests
+            - lint: PHP linting
+            - phpstan: phpstan analyze
+            - phpstanGenerateBaseline: regenerate phpstan baseline, handy after phpstan updates
+            - unit: PHP unit tests
 
-    -d <mariadb|postgres|sqlite>
-        Only with -s functional
+    -d <sqlite|mariadb|mysql|postgres>
+        Only with -s acceptance,functional
         Specifies on which DBMS tests are performed
-            - mariadb (default): use mariadb
+            - sqlite: (default) use sqlite
+            - mariadb: use mariadb
+            - mysql: use mysql
             - postgres: use postgres
-            - sqlite: use sqlite
+
+    -a <mysqli|pdo_mysql>
+        Only with -s acceptance,functional
+        Specifies to use another driver, following combinations are available:
+            - mysql
+                - mysqli (default)
+                - pdo_mysql
+            - mariadb
+                - mysqli (default)
+                - pdo_mysql
 
     -p <7.4|8.0|8.1|8.2>
         Specifies the PHP minor version to be used
@@ -125,13 +166,15 @@ cd ../testing-docker || exit 1
 # Option defaults
 ROOT_DIR=$(readlink -f ${PWD}/../../)
 TEST_SUITE="unit"
-DBMS="mariadb"
+DBMS="sqlite"
 PHP_VERSION="7.4"
 TYPO3_VERSION="11"
 PHP_XDEBUG_ON=0
 PHP_XDEBUG_PORT=9003
 EXTRA_TEST_OPTIONS=""
 SCRIPT_VERBOSE=0
+CGLCHECK_DRY_RUN=""
+DATABASE_DRIVER=""
 
 # Option parsing
 # Reset in case getopts has been used previously in the shell
@@ -139,8 +182,11 @@ OPTIND=1
 # Array for invalid options
 INVALID_OPTIONS=()
 # Simple option parsing based on getopts (! not getopt)
-while getopts ":s:d:p:t:e:xy:huv" OPT; do
+while getopts ":s:d:a:p:n:t:e:xy:huv" OPT; do
     case ${OPT} in
+    a)
+        DATABASE_DRIVER=${OPTARG}
+        ;;
     s)
         TEST_SUITE=${OPTARG}
         ;;
@@ -149,12 +195,21 @@ while getopts ":s:d:p:t:e:xy:huv" OPT; do
         ;;
     p)
         PHP_VERSION=${OPTARG}
+        if ! [[ ${PHP_VERSION} =~ ^(7.4|8.0|8.1|8.2)$ ]]; then
+            INVALID_OPTIONS+=("p ${OPTARG}")
+        fi
         ;;
     t)
         TYPO3_VERSION=${OPTARG}
+        if ! [[ ${TYPO3_VERSION} =~ ^(11|12)$ ]]; then
+            INVALID_OPTIONS+=("p ${OPTARG}")
+        fi
         ;;
     e)
         EXTRA_TEST_OPTIONS=${OPTARG}
+        ;;
+    n)
+        CGLCHECK_DRY_RUN="-n"
         ;;
     x)
         PHP_XDEBUG_ON=1
@@ -223,10 +278,17 @@ composerUpdate)
     docker-compose down
     ;;
 functional)
+    handleDbmsAndDriverOptions
     setUpDockerComposeDotEnv
     case ${DBMS} in
     mariadb)
+        echo "Using driver: ${DATABASE_DRIVER}"
         docker-compose run functional_mariadb10
+        SUITE_EXIT_CODE=$?
+        ;;
+    mysql)
+        echo "Using driver: ${DATABASE_DRIVER}"
+        docker-compose run functional_mysql80
         SUITE_EXIT_CODE=$?
         ;;
     postgres)
