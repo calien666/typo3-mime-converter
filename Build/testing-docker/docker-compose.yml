@@ -180,9 +180,7 @@ services:
         if [ ${SCRIPT_VERBOSE} -eq 1 ]; then
           set -x
         fi
-      pwd
-      ls -la
-      php -dxdebug.mode=off .Build/bin/php-cs-fixer fix -v ${CGLCHECK_DRY_RUN} --config=Build/php-cs-fixer/php-cs-rules.php
+        php -dxdebug.mode=off .Build/bin/php-cs-fixer fix -v ${CGLCHECK_DRY_RUN} --config=Build/php-cs-fixer/php-cs-rules.php
       "
 
   functional_sqlite:
@@ -314,7 +312,7 @@ services:
     user: "${HOST_UID}"
     volumes:
       - ${ROOT_DIR}:${ROOT_DIR}
-    working_dir: ${ROOT_DIR}
+    working_dir: ${ROOT_DIR}/
     command: >
       /bin/sh -c "
         if [ ${SCRIPT_VERBOSE} -eq 1 ]; then
@@ -327,7 +325,7 @@ services:
     user: "${HOST_UID}"
     volumes:
       - ${ROOT_DIR}:${ROOT_DIR}
-    working_dir: ${ROOT_DIR}
+    working_dir: ${ROOT_DIR}/
     command: >
       /bin/sh -c "
         if [ ${SCRIPT_VERBOSE} -eq 1 ]; then
