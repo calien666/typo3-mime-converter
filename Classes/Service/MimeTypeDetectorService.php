@@ -9,7 +9,7 @@ use WebVision\MimeConverter\Exception\InsufficientFileExtensionException;
 use WebVision\MimeConverter\Exception\InsufficientMimeTypeException;
 use WebVision\MimeConverter\Exception\MimeTypeNotRegisteredException;
 
-class MimeTypeDetectorService
+final class MimeTypeDetectorService
 {
     protected MimeTypeDetector $t3MimeTypeDetector;
 
@@ -65,8 +65,8 @@ class MimeTypeDetectorService
     }
 
     /**
-     * @throws InsufficientFileExtensionException
      * @return string[]
+     * @throws InsufficientFileExtensionException
      */
     public function getExpectedMimeTypeFromFileSuffix(string $fileSuffix): array
     {
