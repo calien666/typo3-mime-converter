@@ -9,9 +9,12 @@ use TYPO3\CMS\Core\SingletonInterface;
 
 final class FileConverterRegistry implements SingletonInterface
 {
+    private ServiceLocator $mimeConverterLocator;
+
     public function __construct(
-        private readonly ServiceLocator $mimeConverterLocator
+        ServiceLocator $mimeConverterLocator
     ) {
+        $this->mimeConverterLocator = $mimeConverterLocator;
     }
 
     public function findConverterForMimeType(
