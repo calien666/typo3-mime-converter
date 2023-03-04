@@ -2,6 +2,7 @@
 	"name": "web-vision/mime-converter",
 	"description": "File converter based on mime-type to file extension comparison. Serves image converter by default and automatic tagging for self written converter providers.",
 	"type": "typo3-cms-extension",
+	"license": "GPL-2.0-or-later",
 	"require": {
 		"typo3/cms-core": "^11.5 || ^12.2",
 		"ext-imagick": "*",
