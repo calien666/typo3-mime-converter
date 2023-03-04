@@ -291,6 +291,30 @@ cgl)
     SUITE_EXIT_CODE=$?
     docker-compose down
     ;;
+checkBom)
+    setUpDockerComposeDotEnv
+    docker-compose run check_bom
+    SUITE_EXIT_CODE=$?
+    docker-compose down
+    ;;
+checkExceptionCodes)
+    setUpDockerComposeDotEnv
+    docker-compose run check_exception_codes
+    SUITE_EXIT_CODE=$?
+    docker-compose down
+    ;;
+checkTestMethodsPrefix)
+    setUpDockerComposeDotEnv
+    docker-compose run check_test_methods_prefix
+    SUITE_EXIT_CODE=$?
+    docker-compose down
+    ;;
+checkRst)
+    setUpDockerComposeDotEnv
+    docker-compose run check_rst
+    SUITE_EXIT_CODE=$?
+    docker-compose down
+    ;;
 *)
     echo "Invalid -s option argument ${TEST_SUITE}" >&2
     echo >&2
