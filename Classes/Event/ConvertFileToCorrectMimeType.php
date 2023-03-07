@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace WebVision\MimeConverter\Event;
 
-use http\Exception\InvalidArgumentException;
 use TYPO3\CMS\Core\Resource\Event\BeforeFileAddedEvent;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WebVision\MimeConverter\Converter\AbstractFileConverter;
@@ -66,7 +65,7 @@ final class ConvertFileToCorrectMimeType
             ->findConverterForMimeType($mimeType, $expectedMimeType[0]);
 
         if (!$provider instanceof AbstractFileConverter) {
-            throw new InvalidArgumentException(
+            throw new \InvalidArgumentException(
                 sprintf('Provider doesn\'t contain needed class %s', AbstractFileConverter::class),
                 1678188643148
             );
