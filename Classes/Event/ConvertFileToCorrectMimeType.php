@@ -64,6 +64,10 @@ final class ConvertFileToCorrectMimeType
         $provider = GeneralUtility::makeInstance(FileConverterRegistry::class)
             ->findConverterForMimeType($mimeType, $expectedMimeType[0]);
 
+        if ($provider === null) {
+            return;
+        }
+
         $mimeCorrupt = $provider->isBrokenMime($originalFile);
 
         if (
