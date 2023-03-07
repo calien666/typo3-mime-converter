@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WebVision\MimeConverter\Converter\Provider;
 
+use TYPO3\CMS\Core\Utility\CommandUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WebVision\MimeConverter\Converter\AbstractFileConverter;
 use WebVision\MimeConverter\Exception\MimeTypeNotRegisteredException;
@@ -80,7 +81,9 @@ final class ImageConverterProvider extends AbstractFileConverter
         $im = new \Imagick();
         try {
             $im->readImage($this->sourceTemp);
-            $im->setFormat(self::$forceConvertTypes[$expectedMimeType]);
+            if ($expectedMimeType !== $setMimeType) {
+                $im->setFormat(self::$forceConvertTypes[$expectedMimeType]);
+            }
             $im->writeImage($originalFile);
         } catch (\ImagickException $e) {
             return false;
@@ -88,6 +91,13 @@ final class ImageConverterProvider extends AbstractFileConverter
             $im->clear();
         }
         return true;
+    }
+
+    public function isBrokenMime(string $originalFile): bool
+    {
+        $cmd = sprintf('identify -regard-warnings %s', $originalFile);
+        CommandUtility::exec($cmd, $output, $returnCode);
+        return (bool)$returnCode;
     }
 
     public function __destruct()

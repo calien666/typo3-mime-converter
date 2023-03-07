@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WebVision\MimeConverter\Event;
 
+use http\Exception\InvalidArgumentException;
 use TYPO3\CMS\Core\Resource\Event\BeforeFileAddedEvent;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WebVision\MimeConverter\Converter\AbstractFileConverter;
@@ -60,22 +61,31 @@ final class ConvertFileToCorrectMimeType
         } catch (InsufficientFileExtensionException $e) {
             return;
         }
+        // array key 0 is set, see last exception catch
+        $provider = GeneralUtility::makeInstance(FileConverterRegistry::class)
+            ->findConverterForMimeType($mimeType, $expectedMimeType[0]);
+
+        if (!$provider instanceof AbstractFileConverter) {
+            throw new InvalidArgumentException(
+                sprintf('Provider doesn\'t contain needed class %s', AbstractFileConverter::class),
+                1678188643148
+            );
+        }
+        $mimeCorrupt = $provider->isBrokenMime($originalFile);
 
         if (
-            !in_array($fileSuffixFromFileName, $expectedFileSuffix)
-            && !in_array($mimeType, $expectedMimeType)
+            $mimeCorrupt ||
+            (
+                !in_array($fileSuffixFromFileName, $expectedFileSuffix)
+                && !in_array($mimeType, $expectedMimeType)
+            )
         ) {
-            // array key 0 is set, see last exception catch
-            $provider = GeneralUtility::makeInstance(FileConverterRegistry::class)
-                ->findConverterForMimeType($mimeType, $expectedMimeType[0]);
-            if ($provider instanceof AbstractFileConverter) {
-                try {
-                    //$copiedFile = $provider->copyFile($originalFile, $expectedFileSuffix[0]);
-                    $provider->convert($originalFile, $mimeType, $expectedMimeType[0]);
-                } catch (MimeTypeNotRegisteredException $e) {
-                    // TODO: Possibly log here
-                }
+            try {
+                $provider->convert($originalFile, $mimeType, $expectedMimeType[0]);
+            } catch (MimeTypeNotRegisteredException $e) {
+                // TODO: Possibly log here
             }
+
         }
     }
 }

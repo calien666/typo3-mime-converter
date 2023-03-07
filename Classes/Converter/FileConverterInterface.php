@@ -16,4 +16,6 @@ interface FileConverterInterface
     public function convert(string $originalFile, string $setMimeType, string $expectedMimeType): bool;
 
     public function copyFile(string $originalFile, string $fileSuffix): ?string;
+
+    public function isBrokenMime(string $originalFile): bool;
 }
