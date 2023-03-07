@@ -64,12 +64,6 @@ final class ConvertFileToCorrectMimeType
         $provider = GeneralUtility::makeInstance(FileConverterRegistry::class)
             ->findConverterForMimeType($mimeType, $expectedMimeType[0]);
 
-        if (!($provider instanceof AbstractFileConverter)) {
-            throw new \InvalidArgumentException(
-                sprintf('Provider doesn\'t contain needed class %s', AbstractFileConverter::class),
-                1678188643148
-            );
-        }
         $mimeCorrupt = $provider->isBrokenMime($originalFile);
 
         if (
