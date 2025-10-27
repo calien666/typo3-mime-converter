@@ -45,6 +45,5 @@
 			"typo3/class-alias-loader": true,
 			"sbuerk/typo3-cmscomposerinstallers-testingframework-bridge": true
 		}
-	},
-	"version": "2.0.0"
+	}
 }
