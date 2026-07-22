@@ -11,15 +11,16 @@
 		}
 	],
 	"require": {
-		"typo3/cms-core": "^11.5 || ^12.2",
-		"ext-imagick": "*",
-		"ext-fileinfo": "*"
+		"php": "^8.2 || ^8.3 || ^8.4 || ^8.5",
+		"ext-fileinfo": "*",
+		"typo3/cms-core": "^13.4 || ^14.3"
 	},
 	"require-dev": {
-		"typo3/testing-framework": "dev-7-composerinstaller5-fix",
-		"saschaegerer/phpstan-typo3": "^1.8",
-		"phpstan/phpstan": "^1.10",
-		"friendsofphp/php-cs-fixer": "^v3.14"
+		"friendsofphp/php-cs-fixer": "^3.64",
+		"phpstan/phpstan": "^2.1",
+		"phpunit/phpunit": "^11",
+		"saschaegerer/phpstan-typo3": "^3",
+		"typo3/testing-framework": "^9"
 	},
 	"autoload": {
 		"psr-4": {
@@ -31,18 +32,24 @@
 			"WebVision\\MimeConverter\\Tests\\": "Tests"
 		}
 	},
-	"extra": {
-		"typo3/cms": {
-			"extension-key": "mime_converter"
-		}
-	},
 	"config": {
 		"vendor-dir": ".Build/vendor",
 		"bin-dir": ".Build/bin",
+		"optimize-autoloader": true,
+		"sort-packages": true,
 		"allow-plugins": {
 			"typo3/cms-composer-installers": true,
-			"typo3/class-alias-loader": true,
-			"sbuerk/typo3-cmscomposerinstallers-testingframework-bridge": true
+			"typo3/class-alias-loader": true
+		}
+	},
+	"extra": {
+		"typo3/cms": {
+			"extension-key": "mime_converter",
+			"web-dir": ".Build/Web",
+			"version": "2.0.0",
+			"Package": {
+				"providesPackages": {}
+			}
 		}
 	}
 }

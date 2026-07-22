@@ -8,22 +8,8 @@ services:
     resource: '../Classes/*'
     exclude:
       - '../Classes/Converter/FileConverterRegistry.php'
-      - '../Classes/Event/*'
-
-  WebVision\MimeConverter\Converter\Provider\ImageConverterProvider:
-    tags:
-      - name: mime.converter
-        identifier: image
-
-  WebVision\MimeConverter\Event\ConvertFileToCorrectMimeType:
-    tags:
-      - name: event.listener
-        identifier: 'web-vision/file-fixer'
-        event: TYPO3\CMS\Core\Resource\Event\BeforeFileAddedEvent
 
   WebVision\MimeConverter\Converter\FileConverterRegistry:
+    public: true
     arguments:
       $mimeConverterLocator: !tagged_locator { tag: 'mime.converter', index_by: 'identifier' }
-
-  WebVision\MimeConverter\Service\MimeTypeDetectorService:
-    public: true

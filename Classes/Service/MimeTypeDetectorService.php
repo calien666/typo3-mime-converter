@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace WebVision\MimeConverter\Service;
 
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Resource\MimeTypeDetector;
 use WebVision\MimeConverter\Exception\InsufficientFileExtensionException;
 use WebVision\MimeConverter\Exception\InsufficientMimeTypeException;
 use WebVision\MimeConverter\Exception\MimeTypeNotRegisteredException;
 
+#[Autoconfigure(public: true)]
 final class MimeTypeDetectorService
 {
     protected MimeTypeDetector $t3MimeTypeDetector;
