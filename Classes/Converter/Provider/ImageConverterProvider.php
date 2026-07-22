@@ -67,8 +67,8 @@ final class ImageConverterProvider extends AbstractFileConverter
     /**
      * Re-encodes the file into the expected image format with the ImageMagick "convert" binary.
      * A plain convert keeps embedded profiles (EXIF) and does not re-orient the image, so it
-     * mirrors the former \Imagick based implementation. GraphicsMagick is intentionally not used:
-     * it does not reliably repair the broken images this extension targets.
+     * mirrors the former \Imagick based implementation. When ImageMagick is not available the
+     * method is a no-op returning false, so the upload passes through unchanged.
      *
      * @throws MimeTypeNotRegisteredException
      */
@@ -77,6 +77,10 @@ final class ImageConverterProvider extends AbstractFileConverter
         string $setMimeType,
         string $expectedMimeType
     ): bool {
+        $binary = $this->resolveImageMagickBinary('convert');
+        if ($binary === null) {
+            return false;
+        }
         $sourceSuffix = $this->mimeTypeDetectorService->getFileExtensionsForMimeType($setMimeType)[0] ?? '';
         $sourceTemp = GeneralUtility::tempnam('mimeconverter_source_', '.' . $sourceSuffix);
         $targetTemp = GeneralUtility::tempnam('mimeconverter_target_', '.' . self::$forceConvertTypes[$expectedMimeType]);
@@ -84,7 +88,7 @@ final class ImageConverterProvider extends AbstractFileConverter
         $returnCode = 0;
         try {
             copy($originalFile, $sourceTemp);
-            $command = $this->imageMagickBinary('convert')
+            $command = $binary
                 . ' ' . CommandUtility::escapeShellArgument($sourceTemp)
                 . ' ' . CommandUtility::escapeShellArgument($targetTemp);
             CommandUtility::exec($command, $output, $returnCode);
@@ -101,8 +105,12 @@ final class ImageConverterProvider extends AbstractFileConverter
 
     public function isBrokenMime(string $originalFile): bool
     {
-        $command = $this->imageMagickBinary('identify')
-            . ' -regard-warnings ' . CommandUtility::escapeShellArgument($originalFile);
+        $binary = $this->resolveImageMagickBinary('identify');
+        if ($binary === null) {
+            // Without ImageMagick the state cannot be determined; do not report broken.
+            return false;
+        }
+        $command = $binary . ' -regard-warnings ' . CommandUtility::escapeShellArgument($originalFile);
         $output = [];
         $returnCode = 0;
         CommandUtility::exec($command, $output, $returnCode);
@@ -111,14 +119,15 @@ final class ImageConverterProvider extends AbstractFileConverter
     }
 
     /**
-     * Builds the escaped path to an ImageMagick binary, honouring the configured
-     * GFX processor_path for the binary location but always using ImageMagick (never
-     * GraphicsMagick, regardless of the configured GFX processor).
+     * Resolves the full command for an ImageMagick binary ("convert"/"identify") through the
+     * configured GFX/binary paths, or null when it is not available. GraphicsMagick ships neither
+     * "convert" nor "identify" as a standalone binary, so a null result also means the extension
+     * stays inactive on a GraphicsMagick-only setup — which it cannot reliably serve anyway.
      */
-    private function imageMagickBinary(string $binary): string
+    private function resolveImageMagickBinary(string $binary): ?string
     {
-        $path = (string)($GLOBALS['TYPO3_CONF_VARS']['GFX']['processor_path'] ?? '');
+        $command = CommandUtility::getCommand($binary);
 
-        return CommandUtility::escapeShellArgument($path . $binary);
+        return is_string($command) && $command !== '' ? $command : null;
     }
 }

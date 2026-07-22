@@ -25,6 +25,11 @@ ImageMagick. Ensure the ImageMagick command line tools (`convert` /
 `identify`) are installed on your server. The PHP `imagick` extension is
 no longer required — conversion runs through the ImageMagick binary.
 
+If ImageMagick is not available (for example on a GraphicsMagick-only
+setup, which does not ship a standalone `convert` / `identify`), the
+extension stays inactive: uploads are stored unchanged instead of being
+converted, and no file is falsely reported as broken.
+
 ## Installation
 
 Install with your favour:
