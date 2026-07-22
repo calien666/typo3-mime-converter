@@ -8,6 +8,7 @@ services:
     resource: '../Classes/*'
     exclude:
       - '../Classes/Converter/FileConverterRegistry.php'
+      - '../Classes/Report/*'
 
   WebVision\MimeConverter\Converter\FileConverterRegistry:
     public: true

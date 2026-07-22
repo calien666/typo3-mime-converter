@@ -20,7 +20,11 @@
 		"phpstan/phpstan": "^2.1",
 		"phpunit/phpunit": "^11",
 		"saschaegerer/phpstan-typo3": "^3",
+		"typo3/cms-reports": "^13.4 || ^14.3",
 		"typo3/testing-framework": "^9"
+	},
+	"suggest": {
+		"typo3/cms-reports": "Adds a system report warning when ImageMagick is not available."
 	},
 	"autoload": {
 		"psr-4": {
