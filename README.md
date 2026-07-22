@@ -1,7 +1,7 @@
 [![Latest Stable Version](https://poser.pugx.org/calien/mime-converter/v/stable.svg)](https://packagist.org/packages/calien/mime-converter)
 [![PHP Version Require](http://poser.pugx.org/calien/mime-converter/require/php)](https://packagist.org/packages/calien/mime-converter)
-[![TYPO3 12.2](https://img.shields.io/badge/TYPO3-12.2-green.svg?style=flat-square)](https://get.typo3.org/version/12)
-[![TYPO3 11.5](https://img.shields.io/badge/TYPO3-11.5-green.svg?style=flat-square)](https://get.typo3.org/version/11)
+[![TYPO3 14.3](https://img.shields.io/badge/TYPO3-14.3-green.svg?style=flat-square)](https://get.typo3.org/version/14)
+[![TYPO3 13.4](https://img.shields.io/badge/TYPO3-13.4-green.svg?style=flat-square)](https://get.typo3.org/version/13)
 
 [![License](http://poser.pugx.org/calien/mime-converter/license)](https://packagist.org/packages/calien/mime-converter)
 [![Total Downloads](https://poser.pugx.org/calien/mime-converter/downloads.svg)](https://packagist.org/packages/calien/mime-converter)
@@ -21,8 +21,9 @@ inside TYPO3.
 ## Requirements
 
 Due to limitations in GraphicsMagick this extension works only with
-ImageMagick. Ensure, ImageMagick and PECL extension imagick are
-installed on your server.
+ImageMagick. Ensure the ImageMagick command line tools (`convert` /
+`identify`) are installed on your server. The PHP `imagick` extension is
+no longer required — conversion runs through the ImageMagick binary.
 
 ## Installation
 

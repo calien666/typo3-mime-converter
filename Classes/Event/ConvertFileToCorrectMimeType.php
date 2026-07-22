@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace WebVision\MimeConverter\Event;
 
+use TYPO3\CMS\Core\Attribute\AsEventListener;
 use TYPO3\CMS\Core\Resource\Event\BeforeFileAddedEvent;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use WebVision\MimeConverter\Converter\AbstractFileConverter;
 use WebVision\MimeConverter\Converter\FileConverterRegistry;
 use WebVision\MimeConverter\Exception\InsufficientFileExtensionException;
 use WebVision\MimeConverter\Exception\InsufficientMimeTypeException;
@@ -14,18 +13,17 @@ use WebVision\MimeConverter\Exception\MimeTypeNotRegisteredException;
 use WebVision\MimeConverter\Service\MimeTypeDetectorService;
 
 /**
- * Handles the BeforeFileAddEvent in ResourceStorage
+ * Handles the BeforeFileAddedEvent in ResourceStorage
  * @internal
  * This class is internal use in mime_converter and no public API
  */
+#[AsEventListener(identifier: 'web-vision/file-fixer')]
 final class ConvertFileToCorrectMimeType
 {
-    protected MimeTypeDetectorService $mimeTypeDetectorService;
-
-    public function __construct(MimeTypeDetectorService $mimeTypeDetectorService)
-    {
-        $this->mimeTypeDetectorService = $mimeTypeDetectorService;
-    }
+    public function __construct(
+        private readonly MimeTypeDetectorService $mimeTypeDetectorService,
+        private readonly FileConverterRegistry $fileConverterRegistry,
+    ) {}
 
     public function __invoke(BeforeFileAddedEvent $beforeFileAddedEvent): void
     {
@@ -61,7 +59,7 @@ final class ConvertFileToCorrectMimeType
             return;
         }
         // array key 0 is set, see last exception catch
-        $provider = GeneralUtility::makeInstance(FileConverterRegistry::class)
+        $provider = $this->fileConverterRegistry
             ->findConverterForMimeType($mimeType, $expectedMimeType[0]);
 
         if ($provider === null) {
@@ -82,7 +80,6 @@ final class ConvertFileToCorrectMimeType
             } catch (MimeTypeNotRegisteredException $e) {
                 // TODO: Possibly log here
             }
-
         }
     }
 }
