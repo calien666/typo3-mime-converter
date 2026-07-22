@@ -4,11 +4,17 @@ declare(strict_types=1);
 
 namespace WebVision\MimeConverter\Converter\Provider;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\CommandUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WebVision\MimeConverter\Converter\AbstractFileConverter;
 use WebVision\MimeConverter\Exception\MimeTypeNotRegisteredException;
+use WebVision\MimeConverter\Service\ImageMagickAvailabilityService;
 
 /**
  * @internal
@@ -21,8 +27,23 @@ use WebVision\MimeConverter\Exception\MimeTypeNotRegisteredException;
     'mime.converter',
     ['identifier' => 'image'],
 )]
-final class ImageConverterProvider extends AbstractFileConverter
+final class ImageConverterProvider extends AbstractFileConverter implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
+    protected ImageMagickAvailabilityService $availabilityService;
+    protected FlashMessageService $flashMessageService;
+
+    public function injectImageMagickAvailabilityService(ImageMagickAvailabilityService $availabilityService): void
+    {
+        $this->availabilityService = $availabilityService;
+    }
+
+    public function injectFlashMessageService(FlashMessageService $flashMessageService): void
+    {
+        $this->flashMessageService = $flashMessageService;
+    }
+
     /**
      * @var array<string, string>
      */
@@ -77,8 +98,9 @@ final class ImageConverterProvider extends AbstractFileConverter
         string $setMimeType,
         string $expectedMimeType
     ): bool {
-        $binary = $this->resolveImageMagickBinary('convert');
+        $binary = $this->availabilityService->resolveBinary('convert');
         if ($binary === null) {
+            $this->reportMissingImageMagick();
             return false;
         }
         $sourceSuffix = $this->mimeTypeDetectorService->getFileExtensionsForMimeType($setMimeType)[0] ?? '';
@@ -105,7 +127,7 @@ final class ImageConverterProvider extends AbstractFileConverter
 
     public function isBrokenMime(string $originalFile): bool
     {
-        $binary = $this->resolveImageMagickBinary('identify');
+        $binary = $this->availabilityService->resolveBinary('identify');
         if ($binary === null) {
             // Without ImageMagick the state cannot be determined; do not report broken.
             return false;
@@ -119,15 +141,23 @@ final class ImageConverterProvider extends AbstractFileConverter
     }
 
     /**
-     * Resolves the full command for an ImageMagick binary ("convert"/"identify") through the
-     * configured GFX/binary paths, or null when it is not available. GraphicsMagick ships neither
-     * "convert" nor "identify" as a standalone binary, so a null result also means the extension
-     * stays inactive on a GraphicsMagick-only setup — which it cannot reliably serve anyway.
+     * A file needed conversion but ImageMagick is missing: log it and, in a backend upload,
+     * surface a flash message so the editor knows the file was stored without conversion.
      */
-    private function resolveImageMagickBinary(string $binary): ?string
+    private function reportMissingImageMagick(): void
     {
-        $command = CommandUtility::getCommand($binary);
+        $this->logger?->warning(
+            'ImageMagick is not available; the uploaded file was stored without mime type conversion.'
+        );
 
-        return is_string($command) && $command !== '' ? $command : null;
+        $languageService = $GLOBALS['LANG'] ?? null;
+        $file = 'LLL:EXT:mime_converter/Resources/Private/Language/locallang.xlf:';
+        $title = $languageService?->sL($file . 'missingImageMagick.title') ?: 'Mime conversion skipped';
+        $body = $languageService?->sL($file . 'missingImageMagick.message')
+            ?: 'ImageMagick was not found on the server. The uploaded file was stored without mime type conversion.';
+
+        $this->flashMessageService
+            ->getMessageQueueByIdentifier()
+            ->enqueue(new FlashMessage($body, $title, ContextualFeedbackSeverity::WARNING, true));
     }
 }

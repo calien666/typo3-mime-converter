@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" product-name="mime_converter">
+		<header/>
+		<body>
+			<trans-unit id="report.label">
+				<source>Mime Converter</source>
+			</trans-unit>
+			<trans-unit id="report.imageMagick.title">
+				<source>ImageMagick</source>
+			</trans-unit>
+			<trans-unit id="report.imageMagick.available">
+				<source>Available</source>
+			</trans-unit>
+			<trans-unit id="report.imageMagick.missing">
+				<source>Not available</source>
+			</trans-unit>
+			<trans-unit id="report.imageMagick.missingMessage">
+				<source>ImageMagick was not found on the server. Uploaded files are stored without mime type conversion. Install the ImageMagick command line tools (convert / identify); GraphicsMagick is not sufficient.</source>
+			</trans-unit>
+			<trans-unit id="missingImageMagick.title">
+				<source>Mime conversion skipped</source>
+			</trans-unit>
+			<trans-unit id="missingImageMagick.message">
+				<source>ImageMagick was not found on the server. The uploaded file was stored without mime type conversion.</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
