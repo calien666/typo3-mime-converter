@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WebVision\MimeConverter\Converter\Provider;
 
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use TYPO3\CMS\Core\Utility\CommandUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WebVision\MimeConverter\Converter\AbstractFileConverter;
@@ -16,6 +17,10 @@ use WebVision\MimeConverter\Exception\MimeTypeNotRegisteredException;
  * Handles the image conversion for wrong suffixed images
  * @example for other mime converters
  */
+#[AutoconfigureTag(
+    'mime.converter',
+    ['identifier' => 'image'],
+)]
 final class ImageConverterProvider extends AbstractFileConverter
 {
     /**
@@ -51,7 +56,6 @@ final class ImageConverterProvider extends AbstractFileConverter
         'image/svg+xml' => 'svg',
         'image/tiff' => 'tiff',
     ];
-    private ?string $sourceTemp = null;
 
     public static function canConvert(string $mimeType, string $expectedMimeType): bool
     {
@@ -61,6 +65,11 @@ final class ImageConverterProvider extends AbstractFileConverter
     }
 
     /**
+     * Re-encodes the file into the expected image format with the ImageMagick "convert" binary.
+     * A plain convert keeps embedded profiles (EXIF) and does not re-orient the image, so it
+     * mirrors the former \Imagick based implementation. GraphicsMagick is intentionally not used:
+     * it does not reliably repair the broken images this extension targets.
+     *
      * @throws MimeTypeNotRegisteredException
      */
     public function convert(
@@ -68,42 +77,48 @@ final class ImageConverterProvider extends AbstractFileConverter
         string $setMimeType,
         string $expectedMimeType
     ): bool {
-        $this->sourceTemp = GeneralUtility::tempnam(
-            'converter',
-            sprintf(
-                '.%s',
-                $this->mimeTypeDetectorService->getFileExtensionsForMimeType($setMimeType)[0] ?? ''
-            )
-        );
-
-        copy($originalFile, $this->sourceTemp);
-
-        $im = new \Imagick();
+        $sourceSuffix = $this->mimeTypeDetectorService->getFileExtensionsForMimeType($setMimeType)[0] ?? '';
+        $sourceTemp = GeneralUtility::tempnam('mimeconverter_source_', '.' . $sourceSuffix);
+        $targetTemp = GeneralUtility::tempnam('mimeconverter_target_', '.' . self::$forceConvertTypes[$expectedMimeType]);
+        $output = [];
+        $returnCode = 0;
         try {
-            $im->readImage($this->sourceTemp);
-            if ($expectedMimeType !== $setMimeType) {
-                $im->setFormat(self::$forceConvertTypes[$expectedMimeType]);
+            copy($originalFile, $sourceTemp);
+            $command = $this->imageMagickBinary('convert')
+                . ' ' . CommandUtility::escapeShellArgument($sourceTemp)
+                . ' ' . CommandUtility::escapeShellArgument($targetTemp);
+            CommandUtility::exec($command, $output, $returnCode);
+            if ($returnCode !== 0 || !file_exists($targetTemp)) {
+                return false;
             }
-            $im->writeImage($originalFile);
-        } catch (\ImagickException $e) {
-            return false;
+            copy($targetTemp, $originalFile);
         } finally {
-            $im->clear();
+            GeneralUtility::unlink_tempfile($sourceTemp);
+            GeneralUtility::unlink_tempfile($targetTemp);
         }
         return true;
     }
 
     public function isBrokenMime(string $originalFile): bool
     {
-        $cmd = sprintf('identify -regard-warnings %s', $originalFile);
-        CommandUtility::exec($cmd, $output, $returnCode);
+        $command = $this->imageMagickBinary('identify')
+            . ' -regard-warnings ' . CommandUtility::escapeShellArgument($originalFile);
+        $output = [];
+        $returnCode = 0;
+        CommandUtility::exec($command, $output, $returnCode);
+
         return (bool)$returnCode;
     }
 
-    public function __destruct()
+    /**
+     * Builds the escaped path to an ImageMagick binary, honouring the configured
+     * GFX processor_path for the binary location but always using ImageMagick (never
+     * GraphicsMagick, regardless of the configured GFX processor).
+     */
+    private function imageMagickBinary(string $binary): string
     {
-        if ($this->sourceTemp !== null) {
-            GeneralUtility::unlink_tempfile($this->sourceTemp);
-        }
+        $path = (string)($GLOBALS['TYPO3_CONF_VARS']['GFX']['processor_path'] ?? '');
+
+        return CommandUtility::escapeShellArgument($path . $binary);
     }
 }
