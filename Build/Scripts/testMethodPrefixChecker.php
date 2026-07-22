@@ -27,14 +27,17 @@ class NodeVisitor extends NodeVisitorAbstract
     }
 }
 
-$parser = (new ParserFactory())->create(ParserFactory::ONLY_PHP7);
+$parser = (new ParserFactory())->createForVersion(\PhpParser\PhpVersion::getHostVersion());
 
 $finder = new Symfony\Component\Finder\Finder();
 $finder->files()
-    ->in([
-        __DIR__ . '/../../Tests/Unit/',
-        __DIR__ . '/../../Tests/Functional/',
-    ])
+    ->in(array_filter(
+        [
+            __DIR__ . '/../../Tests/Unit/',
+            __DIR__ . '/../../Tests/Functional/',
+        ],
+        'is_dir'
+    ))
     ->name('/Test\.php$/');
 
 $output = new ConsoleOutput();
