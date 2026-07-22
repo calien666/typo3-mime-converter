@@ -15,9 +15,8 @@ abstract class AbstractFileConverter implements FileConverterInterface
 {
     protected MimeTypeDetectorService $mimeTypeDetectorService;
 
-    public function __construct(
-        MimeTypeDetectorService $mimeTypeDetectorService
-    ) {
+    public function injectMimeTypeDetectorService(MimeTypeDetectorService $mimeTypeDetectorService): void
+    {
         $this->mimeTypeDetectorService = $mimeTypeDetectorService;
     }
 
@@ -31,6 +30,9 @@ abstract class AbstractFileConverter implements FileConverterInterface
         $replace = sprintf('.%s', $fileSuffix);
         // use preg_replace to ensure. ONLY fileSuffix is replaced
         $newFileName = preg_replace($regex, $replace, $originalFile, 1);
+        if ($newFileName === null) {
+            return null;
+        }
         copy($originalFile, $newFileName);
         return $newFileName;
     }
