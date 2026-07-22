@@ -3,10 +3,12 @@
 /vendor/
 /var/
 /.vscode
-/Build/testing-docker/.env
 /.cache/
 /composer.lock
 /public/
 /composer.json.testing
 /.php-cs-fixer.cache
 /Documentation-GENERATED-temp/
+/packages/
+/Build/phpunit/.phpunit.cache/
+/composer.json.orig

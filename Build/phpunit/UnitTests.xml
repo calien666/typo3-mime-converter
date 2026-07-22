@@ -1,31 +1,35 @@
+<?xml version="1.0"?>
+<!--
+    Boilerplate for a unit test suite setup, adapted from TYPO3 testing-framework.
+
+    Unit tests should extend \TYPO3\TestingFramework\Core\Unit\UnitTestCase.
+    The unit suite bootstrap lives next to this file as UnitTestsBootstrap.php.
+-->
 <phpunit
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.4/phpunit.xsd"
         backupGlobals="true"
+        bootstrap="UnitTestsBootstrap.php"
         cacheResult="false"
         colors="true"
-        convertErrorsToExceptions="true"
-        convertWarningsToExceptions="true"
-        convertNoticesToExceptions="true"
-        forceCoversAnnotation="false"
         processIsolation="false"
         stopOnError="false"
         stopOnFailure="false"
         stopOnIncomplete="false"
         stopOnSkipped="false"
-        verbose="false"
         beStrictAboutTestsThatDoNotTestAnything="false"
+        displayDetailsOnPhpunitDeprecations="true"
+        failOnPhpunitDeprecation="true"
         failOnWarning="true"
+        failOnRisky="true"
 >
     <testsuites>
         <testsuite name="Unit tests">
-            <directory>../../Tests/Unit/</directory>
+            <directory suffix="Test.php">../../Tests/Unit/</directory>
         </testsuite>
     </testsuites>
     <php>
-        <const name="TYPO3_MODE" value="BE" />
-        <ini name="display_errors" value="1" />
-        <ini name="error_reporting" value="E_ALL" />
-        <env name="TYPO3_CONTEXT" value="Testing" />
+        <ini name="display_errors" value="1"/>
+        <env name="TYPO3_CONTEXT" value="Testing"/>
     </php>
 </phpunit>
